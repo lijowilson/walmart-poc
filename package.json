@@ -1,0 +1,22 @@
+{
+  "name": "walmart-poc",
+  "version": "1.0.0",
+  "description": "walmart poc for fetching orderIDs from Account",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "author": "lijo k wilson",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "mongodb": "^3.1.13",
+    "properties-reader": "0.0.16",
+    "puppeteer": "^1.13.0",
+    "validator": "^10.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  }
+}

@@ -1,0 +1,101 @@
+swagger: "2.0"
+info:
+  description: "This is a Sample API Documentation for getting order ID's from grocery.walmart.com and return the same."
+  version: "1.0.0"
+  title: "walmart-scraper"
+  contact:
+    email: "lijo.wilson@litmus7.com"
+  
+host: "localhost:8080"
+basePath: "/api"
+tags:
+- name: "account"
+  description: "API's associated to user account"
+schemes:
+- "http"
+paths:
+  /scrapeInfoForUser:
+    post:
+      tags:
+      - "account"
+      summary: "Fetch order information associated to the user from grocery.walmart.com"
+      description: ""
+      operationId: "scrapeInfoForUser"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "User login information for fetchin the information"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/scrapeInfoResponse"
+        400:
+          description: "Bad Request"
+        404:
+          description: "API/Service Not Found"
+       
+  /fetchScrapingStatus/{scrapeId}:
+    get:
+      tags:
+      - "account"
+      summary: "Fetch the status of scraping activity for corresponding Id"
+      description: ""
+      operationId: "fetchScrapingStatus"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "scrapeId" 
+        in: "path"
+        description: "ScrapeId recieved from /scrapeInfoForUser service"
+        required: true
+        type: string
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/scrapeInfoResponse"
+        400:
+          description: "Bad Request"
+        404:
+          description: "API/Service Not Found"
+        500:
+          description: "Internal Server Error"
+ 
+
+definitions:
+  User:
+    type: "object"
+    required:
+    - "username"
+    - "password"
+    properties:
+      username:
+        type: "string"
+      password:
+        type: "string"
+    xml:
+      name: "User"
+  scrapeInfoResponse:
+    type: "object"
+    properties:
+      scrapeJobId:
+        type: "string"
+      status:
+        type: "string"
+        enum:
+        - "in-progress"
+        - "complete"
+        - "error"
+        - "invalid credentials"
+      orderIds:
+        type: "array"
+        items:
+          type: "string"
