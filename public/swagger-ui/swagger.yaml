@@ -13,6 +13,7 @@ tags:
   description: "API's associated to user account"
 schemes:
 - "http"
+#- "https"
 paths:
   /scrapeInfoForUser:
     post:
