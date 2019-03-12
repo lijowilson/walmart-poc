@@ -50,7 +50,7 @@ route.post('/scrapeInfoForUser',(req,resp) => {
 
 route.get('/fetchScrapingStatus/:scrapeId',(req,res) => {
 
-    var scrapingRepsonse = scrapeInfo;
+    //var scrapingRepsonse = scrapeInfo;
 
     var scrapeId = req.params.scrapeId;
     if(typeof(scrapeId) !== "undefined" && !validator.isEmpty(scrapeId)){
