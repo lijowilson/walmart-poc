@@ -12,3 +12,10 @@ Dependencies Used:
 1. express
 2. mongodb
 3.puppetteer
+
+MongoDB Name:
+webscraper
+
+MongoDB Collection Name:
+scrapeboard
+
