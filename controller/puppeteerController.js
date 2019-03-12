@@ -12,6 +12,16 @@ module.exports = {
           
             const browser = await puppeteer.launch({headless: true});
             const page = await browser.newPage();
+            try {
+                await page.goto(baseurl);
+              } catch(e) {
+                scpResponseTemp.status = "error";
+                scpResponseTemp.orderIdList =[];
+                console.log('temspscrapinfo inside error while opening url'+JSON.stringify(scpResponseTemp));
+                mongocontroller.persistInformation(scpResponseTemp,function(data){
+                browser.close();
+                });
+            }
             await page.goto(baseurl);
             await page.waitForSelector('input[id="email"]');
             await page.type('input[id="email"]', username);
@@ -24,14 +34,10 @@ module.exports = {
               
               if (await page.$("#global-error > .button-link")) {
                 // there was an error
-               
-                console.log(page+":::::::::::::::::::::::::")
-                console.log('Invalid login Credentials');
-               
                 scpResponseTemp.status = "invalid credentials";
                 scpResponseTemp.orderIdList =[];
-                console.log('temspscrapinfo inside invalid login'+JSON.stringify(scpResponseTemp));
-                console.log('username='+username);
+                //console.log('temspscrapinfo inside invalid login'+JSON.stringify(scpResponseTemp));
+                //console.log('username='+username);
                 mongocontroller.persistInformation(scpResponseTemp,function(data){
                 browser.close();
                 });
@@ -50,8 +56,8 @@ module.exports = {
                 scpResponseTemp.orderIds = orderIdArr;
                 scpResponseTemp.status = "complete";
                 scpResponseTemp.scrapeJobId = scpResponseTemp.scrapeJobId;
-                console.log('temspscrapinfo inside valid login'+JSON.stringify( scpResponseTemp));
-                console.log('username='+username);
+                //console.log('temspscrapinfo inside valid login'+JSON.stringify( scpResponseTemp));
+                //console.log('username='+username);
                 mongocontroller.persistInformation(scpResponseTemp,function(data){
                     browser.close();
                 });

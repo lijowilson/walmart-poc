@@ -4,6 +4,7 @@ const controller = require('../controller/puppeteerController')
 const PropertiesReader = require('properties-reader');
 var validator = require('validator');
 var mongocontroller = require('../controller/mongoController')
+var kafkaProducer = require('../controller/kafkaProducerController')
 
 route.post('/scrapeInfoForUser',(req,resp) => {
 
@@ -23,8 +24,8 @@ route.post('/scrapeInfoForUser',(req,resp) => {
     var scrapingRepsonse = scrapeInfo = {
         "scrapeJobId": "",
         "status": "",
-        "orderIds": []
-    };
+        "orderIds": [],
+      };
     if(typeof(username) !== "undefined" && !validator.isEmpty(username) && typeof(password) !== "undefined" &&
             !validator.isEmpty(password) && validator.isEmail(username)){
            
@@ -36,9 +37,42 @@ route.post('/scrapeInfoForUser',(req,resp) => {
             scrapingRepsonse.username=username;
             scrapingRepsonse = mongocontroller.persistInformation(scrapingRepsonse,function(scrapingRepsonseTMP){
             console.log('scraping Response---'+JSON.stringify(scrapingRepsonseTMP));
+            
+            /* Commenting for moving to kafka
             controller.invokePuppeteer(baseurl,username,password,targetSelector,scrapingRepsonseTMP);
             console.log('puppetter invoked...');
             resp.status(200).send(scrapingRepsonseTMP);
+            
+            Code end for moving to kafka*/
+            //logic for appending pwd
+            
+            
+            //copy message
+            var kafkaMessage = {};
+            //recreating the message to be send to kafka
+            kafkaMessage.username = username;
+            kafkaMessage.password = password;
+            kafkaMessage.scrapeJobId = scrapingRepsonseTMP.scrapeJobId;
+            kafkaMessage.status = scrapingRepsonseTMP.status;
+            kafkaMessage.orderIds = scrapingRepsonseTMP.orderIds;
+
+            console.log('kafkaMEssage'+JSON.stringify(kafkaMessage));
+            console.log('scraping responsetmp'+JSON.stringify(scrapingRepsonseTMP))
+            kafkaProducer.produceKafkaMessage(kafkaMessage,function(status){
+                if(status === "success"){
+                    //for sucess scenario
+                    resp.status(200).send(scrapingRepsonseTMP);
+                }else{
+                    //for error scenario
+                    scrapingRepsonseTMP.status="error";
+                    mongocontroller.persistInformation(scrapingRepsonseTMP,function(callbackResp){
+                        console.log('scraping Response---'+JSON.stringify(callbackResp));
+                        resp.status(200).send(callbackResp);
+                    });            
+
+                }
+            });
+
             });    
             
         }else{
@@ -49,8 +83,6 @@ route.post('/scrapeInfoForUser',(req,resp) => {
 });
 
 route.get('/fetchScrapingStatus/:scrapeId',(req,res) => {
-
-    //var scrapingRepsonse = scrapeInfo;
 
     var scrapeId = req.params.scrapeId;
     if(typeof(scrapeId) !== "undefined" && !validator.isEmpty(scrapeId)){
