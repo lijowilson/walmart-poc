@@ -9,10 +9,12 @@ module.exports = {
         (async () => {
            console.log('initial values username='+username+'scrapingid='+scpResponseTemp.scrapeJobId)
            
-          
-            const browser = await puppeteer.launch({headless: true});
+			//added additional parameters to support dockerization
+            const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox'] ,headless:true});
             const page = await browser.newPage();
             try {
+				await page.setUserAgent('Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3 (FM Scene 4.6.1)');
+				
                 await page.goto(baseurl);
               } catch(e) {
                 scpResponseTemp.status = "error";
@@ -22,7 +24,8 @@ module.exports = {
                 browser.close();
                 });
             }
-            await page.goto(baseurl);
+            //await page.goto(baseurl);
+			
             await page.waitForSelector('input[id="email"]');
             await page.type('input[id="email"]', username);
             await page.type('input[id="password"]', password);
