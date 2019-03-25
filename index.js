@@ -1,7 +1,7 @@
-const express = require('express')
+const express = require('express');
 const app = express();
 
-var port = 8080;
+const port = 8080;
 
 //for handling static assets especially swaggerui
 
