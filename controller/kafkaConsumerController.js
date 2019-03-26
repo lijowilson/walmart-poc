@@ -1,6 +1,6 @@
 import * as kafkaObj from 'kafkajs'
 import propertiesReader from 'properties-reader'
-import * as puppeteerController from './controller/puppeteerController'
+import * as puppeteerController from './puppeteerController'
 let properties = propertiesReader('./properties/config.properties')
 
 //initialization of kafka-node object

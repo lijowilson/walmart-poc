@@ -4,4 +4,4 @@ require('babel-register')({
 
 // Import the application
 require('@babel/polyfill')
-require('./kafkaConsumer')
+require('./controller/kafkaConsumerController')
