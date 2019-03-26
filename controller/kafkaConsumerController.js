@@ -41,8 +41,15 @@ const run = async () => {
         scrapingRepsonseTMP.scrapeJobId = message.scrapeJobId
         scrapingRepsonseTMP.status = message.status
         scrapingRepsonseTMP.orderIds = message.orderIds
-        puppeteerController.invokePuppeteer(baseurl,username,password,targetSelector,scrapingRepsonseTMP)
-        console.log('puppetter invoked...')
+        try{
+          console.log('puppetter invoked...')
+          let info = await puppeteerController.invokePuppeteer(baseurl,username,password,targetSelector,scrapingRepsonseTMP)
+  
+        }catch(err){
+          console.log('puppetter error !!!')
+        }
+        console.log('puppetter complete...')
+       
       }
       
       

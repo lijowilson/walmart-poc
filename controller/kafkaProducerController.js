@@ -1,15 +1,19 @@
 import * as kafka from 'kafkajs'
+import process from 'process'
 import propertiesReader from 'properties-reader'
 let properties = propertiesReader('./properties/config.properties')
 
-export function produceKafkaMessage (message, callback) {
+export function produceKafkaMessage (message) {
   
+  return new Promise((resolve,reject) => {
+  
+ 
   const KAFKA_BROKER = properties.get("kafka-host")
   const TOPIC_NAME = properties.get('kafka-topic')
   const CLIENT_ID = properties.get('kafka-clientId')
   
   let kafkaObj = new kafka.Kafka ({
-    clientId: CLIENT_ID
+      clientId: CLIENT_ID
     , brokers: [KAFKA_BROKER]
   })
   
@@ -20,16 +24,16 @@ export function produceKafkaMessage (message, callback) {
     var tempMessage = [{value: stringMsg}]
     await producer.connect()
     await producer.send ({
-      topic: TOPIC_NAME
+        topic: TOPIC_NAME
       , messages: tempMessage
       //messages: JSON.stringify(message)
     })
-    return callback("success")
+    resolve("success")
   }
   
   run().catch (e => {
     console.error(`${clientId} ${e.message}`, e)
-    return callback("error")
+    resolve("error")
   })
   
   const errorTypes = ['unhandledRejection', 'uncaughtException']
@@ -41,7 +45,7 @@ export function produceKafkaMessage (message, callback) {
         console.log(`process.on ${type}`)
         await producer.disconnect()
         process.exit(0)
-        callback("error")
+        resolve("error")
       } catch (_) {
         process.exit(1)
       }
@@ -54,11 +58,11 @@ export function produceKafkaMessage (message, callback) {
         await producer.disconnect()
       } finally {
         process.kill(process.pid, type)
-        callback ("error")
+        resolve("error")
       }
     })
   })
   
-  
+  })//end of promise
 }
 

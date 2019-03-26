@@ -3,6 +3,8 @@ import * as mongoController from './mongoController'
 
 export function invokePuppeteer (baseurl, username, password, targetSelectors,
                                 scpResponseTemp) {
+  return new Promise((resolve,reject) =>{
+  
   try {
     
     (async () => {
@@ -22,9 +24,18 @@ export function invokePuppeteer (baseurl, username, password, targetSelectors,
         scpResponseTemp.orderIdList = []
         console.log('temspscrapinfo inside error while opening url' +
           JSON.stringify(scpResponseTemp))
-        mongoController.persistInformation(scpResponseTemp, data => {
-          browser.close()
-        })
+        try {
+          let data = await mongoController.persistInformation(scpResponseTemp)
+          if(data){
+            await browser.close()
+            reject('error')
+          }
+        }catch(error){
+          console.log(error)
+          reject(error)
+        }
+        
+        
       }
       //await page.goto(baseurl);
       
@@ -41,9 +52,17 @@ export function invokePuppeteer (baseurl, username, password, targetSelectors,
         // there was an error
         scpResponseTemp.status = 'invalid credentials'
         scpResponseTemp.orderIdList = []
-        mongoController.persistInformation(scpResponseTemp, data => {
-          browser.close()
-        })
+        try {
+          let dataTemp = await mongoController.persistInformation(scpResponseTemp)
+          if (dataTemp) {
+            await browser.close()
+            reject('error')
+          }
+        }catch(e){
+          console.log(e)
+          reject(e)
+        }
+        
       } else {
         // the page changed
         console.log('reached the account page')
@@ -59,14 +78,25 @@ export function invokePuppeteer (baseurl, username, password, targetSelectors,
         scpResponseTemp.orderIds = orderIdArr
         scpResponseTemp.status = "complete"
         scpResponseTemp.scrapeJobId = scpResponseTemp.scrapeJobId
-        mongoController.persistInformation(scpResponseTemp, data => {
-          browser.close()
-        })
+        try {
+          let dataTemp1 = await mongoController.persistInformation(scpResponseTemp)
+          if (dataTemp1) {
+            await browser.close()
+            resolve('success')
+          }
+        }catch(e1){
+          console.log(e1)
+          reject(e1)
+        }
+        
+        
       }
       
       
     })()
   } catch (e) {
     console.log('Error ', e)
+    reject('error')
   }
+  });
 }
