@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "babel-node server",
-    "kafkaConsumer": "babel-node startConsumer"
+    "kafkaConsumer": "babel-node kafkaConsumer"
   },
   "author": "lijo k wilson",
   "license": "ISC",
