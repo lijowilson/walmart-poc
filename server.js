@@ -1,3 +1,4 @@
+import "babel-polyfill"
 import express from "express"
 import router  from "./router/routes"
 let app = express()

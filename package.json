@@ -4,8 +4,8 @@
   "description": "walmart poc for fetching orderIDs from Account",
   "main": "server.js",
   "scripts": {
-    "start": "node index",
-    "kafkaConsumer": "node startConsumer"
+    "start": "babel-node server",
+    "kafkaConsumer": "babel-node startConsumer"
   },
   "author": "lijo k wilson",
   "license": "ISC",
