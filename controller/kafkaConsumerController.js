@@ -29,10 +29,10 @@ const run = async () => {
       console.log('message vlaue ' + msgVal)
       if (typeof msgVal != "undefined") {
         message = JSON.parse(msgVal)
-        let baseurl = properties.get("walmart-baseurl")
+        let baseurl = properties.get('walmart-baseurl')
         let username = message.username
         let password = message.password
-        let targetSelector = properties.get("walmart-orderSection-selector")
+        let targetSelector = properties.get('walmart-orderSection-selector')
         let scrapingRepsonseTMP = {
           "scrapeJobId": ""
           , "status": ""
@@ -43,10 +43,10 @@ const run = async () => {
         scrapingRepsonseTMP.orderIds = message.orderIds
         try{
           console.log('puppetter invoked...')
-          let info = await puppeteerController.invokePuppeteer(baseurl,username,password,targetSelector,scrapingRepsonseTMP)
+          await puppeteerController.invokePuppeteer(baseurl,username,password,targetSelector,scrapingRepsonseTMP)
   
         }catch(err){
-          console.log('puppetter error !!!')
+          console.log('puppetter error ==>',err.message)
         }
         console.log('puppetter complete...')
        

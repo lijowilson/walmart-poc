@@ -33,7 +33,7 @@ export function produceKafkaMessage (message) {
   
   run().catch (e => {
     console.error(`${clientId} ${e.message}`, e)
-    resolve("error")
+    reject("error")
   })
   
   const errorTypes = ['unhandledRejection', 'uncaughtException']
@@ -45,7 +45,7 @@ export function produceKafkaMessage (message) {
         console.log(`process.on ${type}`)
         await producer.disconnect()
         process.exit(0)
-        resolve("error")
+        reject("error")
       } catch (_) {
         process.exit(1)
       }
@@ -58,7 +58,7 @@ export function produceKafkaMessage (message) {
         await producer.disconnect()
       } finally {
         process.kill(process.pid, type)
-        resolve("error")
+        reject("error")
       }
     })
   })

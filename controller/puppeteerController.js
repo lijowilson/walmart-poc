@@ -26,13 +26,11 @@ export function invokePuppeteer (baseurl, username, password, targetSelectors,
           JSON.stringify(scpResponseTemp))
         try {
           let data = await mongoController.persistInformation(scpResponseTemp)
-          if(data){
-            await browser.close()
-            reject('error')
-          }
+          //await browser.close()
+          return reject(new Error('Unable to open the base url provided'))
         }catch(error){
           console.log(error)
-          reject(error)
+          return reject(error)
         }
         
         
@@ -54,10 +52,8 @@ export function invokePuppeteer (baseurl, username, password, targetSelectors,
         scpResponseTemp.orderIdList = []
         try {
           let dataTemp = await mongoController.persistInformation(scpResponseTemp)
-          if (dataTemp) {
-            await browser.close()
-            reject('error')
-          }
+          await browser.close()
+          reject(new Error('Invalid Credentials Entered'))
         }catch(e){
           console.log(e)
           reject(e)
@@ -80,18 +76,14 @@ export function invokePuppeteer (baseurl, username, password, targetSelectors,
         scpResponseTemp.scrapeJobId = scpResponseTemp.scrapeJobId
         try {
           let dataTemp1 = await mongoController.persistInformation(scpResponseTemp)
-          if (dataTemp1) {
-            await browser.close()
-            resolve('success')
-          }
+          await browser.close()
+          resolve('success')
         }catch(e1){
           console.log(e1)
           reject(e1)
         }
         
-        
       }
-      
       
     })()
   } catch (e) {

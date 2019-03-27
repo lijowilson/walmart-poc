@@ -137,9 +137,9 @@ export function fetchInformation(scrapingJobId) {
         
         const res = await db.collection(collectionName).findOne(filterQuery, function (err, result) {
           let tempScrapeInfoFetch = {
-            "scrapeJobId": "",
-            "status": "",
-            "orderIds": []
+            "scrapeJobId": ""
+            , "status": ""
+            , "orderIds": []
           };
           
           if (err) {
@@ -163,9 +163,15 @@ export function fetchInformation(scrapingJobId) {
         
         
       } catch (err) {
-        console.log(err);
+        console.log(err.message);
+        if(err.message.indexOf('24 hex characters') !== -1){
+          console.log('invalid parameter error')
+          reject('Invalid Parameter')
+        }else{
+          reject(err);
+        }
         //tempScrapeInfo.status ="Invalid Parameter"
-        reject("Invalid Parameter");
+       // reject("Invalid Parameter");
       } finally {
         client.close();
       }

@@ -42,7 +42,8 @@ paths:
           description: "Bad Request"
         404:
           description: "API/Service Not Found"
-       
+        500:
+          description: "Internal Server Error"
   /fetchScrapingStatus/{scrapeId}:
     get:
       tags:
