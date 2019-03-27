@@ -32,14 +32,14 @@ router.post('/scrapeInfoForUser', (req, resp) => {
       //logic to persist the information in mongo database
       
       try {
-  
+        
         let status = 'in-progress'
         scrapingRepsonse.status = status
         scrapingRepsonse.username = username
         let scrapingRepsonseTMP = await mongoController.persistInformation(scrapingRepsonse)
-  
+        
         console.log('scraping Response from db---' + JSON.stringify(scrapingRepsonseTMP))
-  
+        
         //copy message
         let kafkaMessage = {}
         //recreating the message to be send to kafka
@@ -48,15 +48,15 @@ router.post('/scrapeInfoForUser', (req, resp) => {
         kafkaMessage.scrapeJobId = scrapingRepsonseTMP.scrapeJobId
         kafkaMessage.status = scrapingRepsonseTMP.status
         kafkaMessage.orderIds = scrapingRepsonseTMP.orderIds
-  
+        
         console.log('kafkaMessage' + JSON.stringify(kafkaMessage))
         console.log('scraping responsetmp' + JSON.stringify(scrapingRepsonseTMP))
-  
+        
         //for kafka  produce kafka message
         try {
           await kafkaController.produceKafkaMessage(kafkaMessage)
           resp.status(200).send(scrapingRepsonseTMP)
-        }catch(err) {
+        } catch (err) {
           //for error scenario
           scrapingRepsonseTMP.status = 'error'
           let callbackResp = await mongoController.persistInformation(scrapingRepsonseTMP);
@@ -64,7 +64,7 @@ router.post('/scrapeInfoForUser', (req, resp) => {
           
         }
         
-      }catch(err){
+      } catch (err) {
         console.log(err);
         resp.status(500).send('Internal Server Error')
       }
@@ -76,40 +76,34 @@ router.post('/scrapeInfoForUser', (req, resp) => {
 })
 
 router.get('/fetchScrapingStatus/:scrapeId', (req, res) => {
-  
-  async function fetchFromMongo() {
-    let scrapeId = req.params.scrapeId
-    if (typeof (scrapeId) !== 'undefined' && !validator.isEmpty(scrapeId)) {
-      try {
-        let data = await mongoController.fetchInformation(scrapeId)
-        if (typeof (data) !== 'undefined' && data !== null) {
-          if (data.status === 'Invalid Parameter') {
-            res.status(400).send('Bad Request')
-          } else {
-            res.status(200).send(data)
-          }
-        } else {
-          res.status(500).send('API/Service not found')
-        }
-      } catch (err) {
-        if (err === 'Invalid Parameter') {
+ 
+  let scrapeId = req.params.scrapeId
+  if (typeof (scrapeId) !== 'undefined' && !validator.isEmpty(scrapeId)) {
+    
+    mongoController.fetchInformation(scrapeId).then(data => {
+      if (typeof (data) !== 'undefined' && data !== null) {
+        if (data.status === 'Invalid Parameter') {
           res.status(400).send('Bad Request')
         } else {
-          console.log(err);
-          res.status(500).send('API/Service not found')
+          res.status(200).send(data)
         }
-        
+      } else {
+        res.status(500).send('API/Service not found')
       }
-      
-    } else {
-      res.status(400).send('Bad Request')
-    }
+    }).catch(err => {
+      if (err === 'Invalid Parameter') {
+        res.status(400).send('Bad Request')
+      } else {
+        console.log(err);
+        res.status(500).send('API/Service not found')
+      }
+    });
     
+    
+  } else {
+    res.status(400).send('Bad Request')
   }
   
-  fetchFromMongo().catch(err => {
-    console.log(err);
-  })
 })
 
 export default router
