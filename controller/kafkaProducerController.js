@@ -20,20 +20,27 @@ export function produceKafkaMessage (message) {
   const producer = kafkaObj.producer()
   
   const run = async () => {
-    var stringMsg = JSON.stringify(message)
-    var tempMessage = [{value: stringMsg}]
-    await producer.connect()
-    await producer.send ({
+    try {
+      var stringMsg = JSON.stringify(message)
+      var tempMessage = [{value: stringMsg}]
+      await producer.connect()
+      await producer.send({
         topic: TOPIC_NAME
-      , messages: tempMessage
-      //messages: JSON.stringify(message)
-    })
-    resolve("success")
+        , messages: tempMessage
+        //messages: JSON.stringify(message)
+      })
+      resolve("success")
+    }catch(er){
+      console.log('error => ',er)
+      await producer.disconnect()
+      return reject(er)
+     
+    }
   }
   
   run().catch (e => {
-    console.error(`${clientId} ${e.message}`, e)
-    reject("error")
+    console.error(`on catch block ${clientId} ${e.message}`, e)
+    reject(e)
   })
   
   const errorTypes = ['unhandledRejection', 'uncaughtException']
