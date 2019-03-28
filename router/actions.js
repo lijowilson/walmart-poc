@@ -14,53 +14,55 @@ export const pushToKafka = (req, resp) => {
   async function run() {
     
     //validate if the necessary parameters are present and not empty
-    let username = req.body.username
-    let password = req.body.password
-    //let username = 'dima@litmus7.com';
-    //let password = 'Aa123456';
-    let scrapingRepsonse = {
-      "scrapeJobId": ""
-      , "status": ""
-      , "orderIds": []
-    }
-    if (validateScrapeRequest(username, password)) {
-      //logic to persist the information in mongo database
-      try {
-        
-        const status = 'in-progress'
-        scrapingRepsonse.status = status
-        scrapingRepsonse.username = username
-        let scrapingRepsonseTMP = await mongoController.persistInformation(scrapingRepsonse)
-        console.log('scraping Response from db---' + JSON.stringify(scrapingRepsonseTMP))
-        
-        //copy message
-        let kafkaMsg = populateTransferObj(username,password,scrapingRepsonseTMP.scrapeJobId,
-          scrapingRepsonseTMP.status,scrapingRepsonseTMP.orderIds)
-        console.log('kafkaMessage' + JSON.stringify(kafkaMsg))
-        console.log('scraping responsetmp' + JSON.stringify(scrapingRepsonseTMP))
-        
-        //for kafka  produce kafka message
-        try {
-          await kafkaController.produceKafkaMessage(kafkaMsg)
-          resp.status(200).send(scrapingRepsonseTMP)
-        } catch (err) {
-          //for error scenario
-          console.log('erro in kafka',err)
-          scrapingRepsonseTMP.status = 'error'
-          let callbackResp = await mongoController
-            .persistInformation(scrapingRepsonseTMP);
-          resp.status(500).send(callbackResp)
-          
-        }
-        
-      } catch (err) {
-        console.log(err);
-        resp.status(500).send('Internal Server Error')
+    if (req.body) {
+      let userObject = req.body
+      let username = userObject.username
+      let password = userObject.password
+      //let username = 'dima@litmus7.com';
+      //let password = 'Aa123456';
+      let scrapingRepsonse = {
+        "scrapeJobId": ""
+        , "status": ""
+        , "orderIds": []
       }
-    } else {
-      resp.status(400).send('Bad Request')
+      if (validateScrapeRequest(username, password)) {
+        //logic to persist the information in mongo database
+        try {
+          
+          const status = 'in-progress'
+          scrapingRepsonse.status = status
+          scrapingRepsonse.username = username
+          let scrapingRepsonseTMP = await mongoController.persistInformation(scrapingRepsonse)
+          console.log('scraping Response from db---' + JSON.stringify(scrapingRepsonseTMP))
+          
+          //copy message
+          let kafkaMsg = populateTransferObj(username, password, scrapingRepsonseTMP.scrapeJobId,
+            scrapingRepsonseTMP.status, scrapingRepsonseTMP.orderIds)
+          console.log('kafkaMessage' + JSON.stringify(kafkaMsg))
+          console.log('scraping responsetmp' + JSON.stringify(scrapingRepsonseTMP))
+          
+          //for kafka  produce kafka message
+          try {
+            await kafkaController.produceKafkaMessage(kafkaMsg)
+            resp.status(200).send(scrapingRepsonseTMP)
+          } catch (err) {
+            //for error scenario
+            console.log('erro in kafka', err)
+            scrapingRepsonseTMP.status = 'error'
+            let callbackResp = await mongoController
+              .persistInformation(scrapingRepsonseTMP);
+            resp.status(500).send(callbackResp)
+            
+          }
+          
+        } catch (err) {
+          console.log(err);
+          resp.status(500).send('Internal Server Error')
+        }
+      } else {
+        resp.status(400).send('Bad Request')
+      }
     }
-    
   }
   
 }
