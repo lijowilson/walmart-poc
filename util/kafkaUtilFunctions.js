@@ -2,6 +2,7 @@ import * as puppeteerController from "../actions/puppeteerActions"
 import {emptyScrapingResponse} from "./utilFunctions"
 import * as kafka from "kafkajs"
 import propertiesReader from 'properties-reader'
+
 const properties = propertiesReader('./properties/config.properties')
 
 export const kafkaObject = () => {
@@ -31,7 +32,7 @@ export const signalTrapFunc = (signalTraps, obj, process) => {
         await obj.disconnect()
       } finally {
         process.kill(process.pid, type)
-        throw new Error('Error for Type'+type)
+        throw new Error('Error for Type' + type)
       }
     })
   })
@@ -90,21 +91,17 @@ export const readKafkaMsg = async (topicName, consumer) => {
           
           console.log('username' + username + 'password' + password)
           let scrapingRepsonseTMP = emptyScrapingResponse()
-          
           scrapingRepsonseTMP.scrapeJobId = message.scrapeJobId
           scrapingRepsonseTMP.status = message.status
           scrapingRepsonseTMP.orderIds = message.orderIds
           try {
             console.log('puppetter invoked...')
             await puppeteerController.invokePuppeteer(BASEURL, username, password, TGT_SELCTOR, scrapingRepsonseTMP)
-            
           } catch (err) {
             console.log('puppetter error ==>', err.message)
           }
           console.log('puppetter complete...')
-          
         }
-        
         
       }
     })

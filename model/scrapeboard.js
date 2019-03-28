@@ -4,5 +4,7 @@ const scrapeboardSchema = mongoose.Schema({
   username : {type:String,required:[ true,'username field is mandatory']},
   status : {type:String,required: [true , 'status field is mandatory' ]},
   orderIdList: {type:Array}
-}, { collection: 'scrapeboard' });
+  }
+  , { collection: 'scrapeboard',versionKey: false }
+ );
 module.exports = mongoose.model('scrapeboard', scrapeboardSchema);

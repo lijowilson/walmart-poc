@@ -57,7 +57,7 @@ export const saveToDB = async (scrapingResponse, scrapeboard) => {
      which scrape id is empty which means its the first time invokation else
      scrape id would not be empty whih means it would be an updation
   */
-
+  
   if (scrapingResponse.scrapeJobId.length === 0) {
     let scrapeBoradObj = new scrapeboard({
       "username": scrapingResponse.username,
@@ -66,11 +66,10 @@ export const saveToDB = async (scrapingResponse, scrapeboard) => {
     });
     
     //run the validation
-    console.log('inside the save to db method')
     let errorValidator = scrapeBoradObj.validateSync();
     if (typeof errorValidator !== 'undefined') {
       //this means error present. Dont save
-      console.log('error  in validator',errorValidator.errors)
+      console.log('error  in validator', errorValidator.errors)
       throw errorValidator.errors;
     } else {
       try {
@@ -82,8 +81,6 @@ export const saveToDB = async (scrapingResponse, scrapeboard) => {
         tempScrapeInfo.status = newScrapeBoard.status
         tempScrapeInfo.orderIds = newScrapeBoard.orderIdList
         
-        console.log('after saving the info in db ->', tempScrapeInfo)
-        
         return tempScrapeInfo
       } catch (err) {
         if (err) throw (err);
@@ -92,22 +89,19 @@ export const saveToDB = async (scrapingResponse, scrapeboard) => {
       
     }
     //if( assert.ok(!errorValidator.errors['username']) && assert.ok(!errorValidator.errors['status'])){
-    
   } else {
-    console.log('inside else part of mongooseutilfunction')
     try {
       let myquery = {_id: scrapingResponse.scrapeJobId}
-      
       let res = await scrapeboard.findOneAndUpdate(
         myquery
-      , {
-        $set: {
-          "status": scrapingResponse.status,
-          "orderIdList": scrapingResponse.orderIds
-        }
-      }, {
-        upsert: true
-      });
+        , {
+          $set: {
+            "status": scrapingResponse.status,
+            "orderIdList": scrapingResponse.orderIds
+          }
+        }, {
+          upsert: true
+        });
       
       console.log("1 document updated")
       let tempScrapeInfo = emptyScrapingResponse()
@@ -117,7 +111,7 @@ export const saveToDB = async (scrapingResponse, scrapeboard) => {
       return tempScrapeInfo
       
     } catch (err) {
-      console.log('error while updating information',err)
+      console.log('error while updating information', err)
       if (err) throw err
     }
   }
