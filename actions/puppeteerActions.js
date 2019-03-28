@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer'
-import * as mongoController from '../model/mongoController'
+import * as mongoController from './mongoController'
 
 export function invokePuppeteer (baseurl, username, password, targetSelectors,
                                 scpResponseTemp) {

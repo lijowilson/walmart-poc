@@ -24,29 +24,26 @@ export const kafkaConsumer = (kafka) => {
   return kafkaConsume
 }
 
-export const signalTrapFunc = (signalTraps, obj, process, reject) => {
+export const signalTrapFunc = (signalTraps, obj, process) => {
   signalTraps.map(type => {
     process.once(type, async () => {
       try {
         await obj.disconnect()
       } finally {
         process.kill(process.pid, type)
-        if (reject !== undefined)
-          reject("error")
+        throw new Error('Error for Type'+type)
       }
     })
   })
 }
 
-export const errorTypesFunc = (errorTypes, obj, process, reject) => {
+export const errorTypesFunc = (errorTypes, obj, process) => {
   errorTypes.map(type => {
     process.on(type, async () => {
       try {
         console.log(`process.on ${type}`)
         await obj.disconnect()
         process.exit(0)
-        if (reject !== undefined)
-          reject("error")
       } catch (_) {
         process.exit(1)
       }

@@ -1,9 +1,13 @@
 import express from "express"
 import bodyParser from 'body-parser'
 import router  from "./router/routes"
+import mongoose from 'mongoose'
+import {createMongoConnection} from "./util/mongooseUtilFunctions";
 
 let app = express()
 const APP_PORT = 8080
+//mongoose
+createMongoConnection(mongoose)
 
 //for handling static assets especially swaggerui
 app.use('/public',express.static('public'))
@@ -18,3 +22,5 @@ app.use('/api',router)
 app.listen(APP_PORT,() => {
   console.log('The server is running on port',APP_PORT)
 })
+
+

@@ -4,8 +4,8 @@ import {
   , performFetchInfo
   , populateTransferObj
 } from "../util/utilFunctions";
-import * as mongoController from "../model/mongoController";
-import * as kafkaController from "../model/kafkaProducer";
+import * as mongoController from "../actions/mongoController";
+import * as kafkaController from "../actions/kafkaProducer";
 
 export const pushToKafka = (req, resp) => {
   

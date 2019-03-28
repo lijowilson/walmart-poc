@@ -1,5 +1,6 @@
 import validator from "validator";
-import * as mongoController from "../model/mongoController";
+import {fetchwithMongoose} from "../util/mongooseUtilFunctions";
+import scrapeboard from '../model/scrapeboard'
 
 
 export const validateScrapeRequest = (...inputReqArray) => {
@@ -21,7 +22,7 @@ export const performFetchInfo = (res, scrapeId) => {
   
   async function run() {
     try {
-      let data = await mongoController.fetchInformation(scrapeId)
+      let data = await fetchwithMongoose(scrapeId, scrapeboard)
       
       if (data !== 'undefined' && data !== null) {
         if (data.status === 'Invalid Parameter') {
@@ -33,7 +34,7 @@ export const performFetchInfo = (res, scrapeId) => {
         res.status(500).send('API/Service not found')
       }
     } catch (err) {
-      if (err === 'Invalid Parameter') {
+      if (err.message === 'Invalid Parameter') {
         res.status(400).send('Bad Request')
       } else {
         console.log(err);
