@@ -9,10 +9,15 @@ For accessing the swagger page, which is currently bundled with the node applica
 http://localhost:8080/public/swagger-ui/index.html
 
 Dependencies Used:
-1. express
-2. mongodb
-3.puppetteer
-  
+> express
+
+> mongoose
+
+> puppetteer
+
+> babel
+
+
 MongoDB Name:
 webscraper
 
@@ -26,10 +31,14 @@ To Start the KafkaConsumer
 > npm run dev-kafkaConsumer
 
 To Build the transpiled Package:
+
 > mkdir dist
->npm run build //to transpile package and move to dist folder
->npm run test-start // to start the web application
->npm run test-kafkaConsumer //to start the kafka consumer application
+
+> npm run build //to transpile package and move to dist folder
+
+> npm run test-start // to start the web application
+
+> npm run test-kafkaConsumer //to start the kafka consumer application
 
 
 
