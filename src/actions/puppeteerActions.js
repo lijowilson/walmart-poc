@@ -1,83 +1,57 @@
-import puppeteer from 'puppeteer'
-import * as mongoController from './mongoServices'
+import puppeteer from 'puppeteer';
+import {persistInformation} from './mongoServices';
+import {
+  openBasePage,
+  executeLogin,
+  invalidLoginFlow,
+  traverseAccountPage
+} from '../util/puppeteerUtilFunctions'
 
-export function invokePuppeteer(baseurl, username, password, targetSelectors,
+export function invokePuppeteer(baseURL, username, password, targetSelectors,
                                 scpResponseTemp) {
   (async () => {
+    //open browser object
     const browser = await puppeteer.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox']
       , headless: true
     });
+    //open page object
     const page = await browser.newPage();
     try {
-      await page.setUserAgent('Mozilla/5.0 (Windows; U; Windows NT 5.1; de;' +
-        ' rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3 (FM Scene 4.6.1)');
-      await page.goto(baseurl);
-    } catch (e) {
-      scpResponseTemp.status = "error";
-      scpResponseTemp.orderIdList = [];
-      
-      try {
-        let data = await mongoController.persistInformation(scpResponseTemp);
-        await browser.close();
-        throw new Error('Unable to open the base url provided');
-      } catch (error) {
-        console.log(error);
-        //throw error
-        return error;
+      //open the page with base url
+      await openBasePage(browser, page, baseURL, scpResponseTemp);
+      //execute login info
+      await executeLogin(page, username, password, targetSelectors);
+      await Promise.race([
+        page.waitForSelector('.' + targetSelectors),
+        page.waitForSelector('#global-error > .button-link')
+      ]);
+      if (await page.$('#global-error > .button-link')) {
+        // there was an error on login flow
+        try {
+          await invalidLoginFlow(browser, scpResponseTemp, persistInformation);
+        } catch (e) {
+          console.log(`invalid login flow ${e}`);
+          return e
+        }
+      } else {
+        // the page changed
+        let orderIdSections = await page.$$("." + targetSelectors);
+        try {
+          await traverseAccountPage(orderIdSections, scpResponseTemp, browser);
+        } catch (e1) {
+          console.log(e1);
+          return e1;
+        }
       }
-      
+    } catch (err) {
+      console.log(`error in puppetteer actions js ${err}`);
+      browser.close();
+      scpResponseTemp.status = 'error';
+      scpResponseTemp.orderIdList = [];
+      await persistInformation(scpResponseTemp);
+      return err;
       
     }
-    //await page.goto(baseurl);
-    
-    await page.waitForSelector('input[id="email"]');
-    await page.type('input[id="email"]', username);
-    await page.type('input[id="password"]', password);
-    await page.click('button[type="submit"]');
-    await Promise.race([
-      page.waitForSelector("." + targetSelectors),
-      page.waitForSelector('#global-error > .button-link')
-    ]);
-    
-    if (await page.$('#global-error > .button-link')) {
-      // there was an error
-      scpResponseTemp.status = 'invalid credentials';
-      scpResponseTemp.orderIdList = [];
-      try {
-        await mongoController.persistInformation(scpResponseTemp);
-        await browser.close();
-        throw new Error('Invalid Credentials Entered');
-      } catch (e) {
-        //console.log(e)
-        return e;
-      }
-      
-    } else {
-      // the page changed
-      console.log('reached the account page');
-      let orderIDSections = await page.$$("." + targetSelectors);
-      //console.log('length of selectors ' + orderIDSections.length)
-      let orderIdArr = [];
-      for (let tile of orderIDSections) {
-        let orderID = await tile.$eval('b', (b) => b.innerText);
-        orderIdArr.push(orderID);
-        console.log(orderID);
-      }
-      
-      scpResponseTemp.orderIds = orderIdArr;
-      scpResponseTemp.status = "complete";
-      try {
-        await mongoController.persistInformation(scpResponseTemp);
-        await browser.close();
-        return scpResponseTemp;
-      } catch (e1) {
-        console.log(e1);
-        throw e1
-      }
-      
-    }
-    
-  })()
-  
+  })();
 }

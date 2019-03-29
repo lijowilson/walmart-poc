@@ -18,7 +18,7 @@ export const openBasePage = async (browser, page, baseURL, scpResponseTemp) => {
   
 };
 
-export const executeLogin = async (page, username, password, targetSelectors) => {
+export const executeLogin = async (page, username, password) => {
   
   await page.waitForSelector('input[id="email"]');
   await page.type('input[id="email"]', username);
