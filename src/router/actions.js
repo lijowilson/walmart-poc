@@ -21,9 +21,9 @@ export const pushToKafka = (req, resp) => {
       const password = userObject.password;
       //username = 'dima@litmus7.com'; password = 'Aa123456';
       let scrapingRepsonse = {
-        "scrapeJobId": ""
-        , "status": ""
-        , "orderIds": []
+        'scrapeJobId': ''
+        , 'status': ''
+        , 'orderIds': []
       };
       if (validateScrapeRequest(username, password)) {
         //logic to persist the information in mongo database
@@ -46,8 +46,13 @@ export const pushToKafka = (req, resp) => {
             resp.status(500).send(callbackResp);
           }
         } catch (err) {
-          console.log(err);
-          resp.status(500).send('Internal Server Error');
+          console.log(err.message);
+          if (err.message.indexOf('customer validation failed') !== -1) {
+            console.log(`invalid parameter error`);
+            resp.status(400).send('Bad Request');
+          } else {
+            resp.status(500).send('Internal Server Error');
+          }
         }
       } else {
         resp.status(400).send('Bad Request');
@@ -59,7 +64,7 @@ export const pushToKafka = (req, resp) => {
 export const fetchScrapeStatus = (req, res) => {
   
   // noinspection JSUnresolvedVariable
-   const scrapeId = req.params.scrapeId;
+  const scrapeId = req.params.scrapeId;
   if (isNotEmptyAndUndefined(scrapeId)) {
     return performFetchInfo(res, scrapeId);
   } else {

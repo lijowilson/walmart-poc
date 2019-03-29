@@ -46,7 +46,7 @@ export const fetchwithMongoose = async (scrapeJobId, scrapeboard) => {
   return tempScrapeInfoFetch
 };
 
-export const saveToDB = async (scrapingResponse, scrapeboard) => {
+export const saveToDB = async (scrapingResponse, customer) => {
   
   /* now the save operation for scraping response can take 2 options. Either the scraping response
      which scrape id is empty which means its the first time invocation else
@@ -54,21 +54,14 @@ export const saveToDB = async (scrapingResponse, scrapeboard) => {
   */
   
   if (scrapingResponse.scrapeJobId.length === 0) {
-    let scrapeBoradObj = new scrapeboard({
-      "username": scrapingResponse.username,
-      "status": scrapingResponse.status
-      , "orderIdList": scrapingResponse.orderIds
+    let customerObj = new customer({
+      'username': scrapingResponse.username
+      , 'status': scrapingResponse.status
+      , 'orderIdList': scrapingResponse.orderIds
     });
     
-    //run the validation
-    const errorValidator = scrapeBoradObj.validateSync();
-    if (typeof errorValidator !== 'undefined') {
-      //this means error present. Dont save
-      console.log(`error  in validator ${errorValidator.errors}`);
-      throw errorValidator.errors;
-    }
     try {
-      const newScrapeBoard = await scrapeBoradObj.save();
+      const newScrapeBoard = await customerObj.save();
       // saved!
       let tempScrapeInfo = emptyScrapingResponse();
       tempScrapeInfo.scrapeJobId = newScrapeBoard.id;
@@ -84,12 +77,12 @@ export const saveToDB = async (scrapingResponse, scrapeboard) => {
   else {
     try {
       let myQuery = {_id: scrapingResponse.scrapeJobId};
-      await scrapeboard.findOneAndUpdate(
+      await customer.findOneAndUpdate(
         myQuery
         , {
           $set: {
-            "status": scrapingResponse.status,
-            "orderIdList": scrapingResponse.orderIds
+            'status': scrapingResponse.status,
+            'orderIdList': scrapingResponse.orderIds
           }
         }, {
           upsert: true

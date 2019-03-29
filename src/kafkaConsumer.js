@@ -1,15 +1,14 @@
+import mongoose from 'mongoose';
+import process from 'process';
+import propertiesReader from 'properties-reader';
 import {
   kafkaObject,
   kafkaConsumer,
   readKafkaMsg,
   errorTypesFunc, signalTrapFunc
 } from './util/kafkaUtilFunctions';
-import propertiesReader from 'properties-reader';
-import process from 'process';
-
-const properties = propertiesReader('./properties/config.properties');
-import mongoose from 'mongoose';
 import {createMongoConnection} from "./util/mongooseUtilFunctions";
+const properties = propertiesReader('./properties/config.properties');
 
 //initialization of kafka-node object
 const consumer = kafkaConsumer(kafkaObject);

@@ -3,7 +3,9 @@ import mongoose from 'mongoose';
 const customerSchema = mongoose.Schema({
     username: {
       type: String,
-      required: true
+      required: true,
+      minlength: 10,
+      maxlength: 20
     },
     status: {
       type: String,

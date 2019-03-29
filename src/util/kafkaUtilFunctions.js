@@ -1,6 +1,6 @@
 import {invokePuppeteer}from '../actions/puppeteerActions';
 import {emptyScrapingResponse} from './utilFunctions';
-import * as kafka from "kafkajs";
+import * as kafka from 'kafkajs';
 import propertiesReader from 'properties-reader';
 
 const properties = propertiesReader('./properties/config.properties');
@@ -27,7 +27,7 @@ export const signalTrapFunc = (signalTraps, obj, process) => {
       try {
         await obj.disconnect();
       } catch(e) {
-        console.log('error on signaltrap function',e);
+        console.log(`error on signaltrap function => ${e}`);
       }finally
        {
         // noinspection JSUnresolvedFunction
@@ -45,7 +45,7 @@ export const errorTypesFunc = (errorTypes, obj, process) => {
         await obj.disconnect();
         process.exit(0);
       } catch (e) {
-        console.log('error with kafka errorTypes',e);
+        console.log(`error with kafka errorTypes ->${e}`);
         process.exit(1);
       }
     })

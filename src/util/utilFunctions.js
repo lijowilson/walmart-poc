@@ -66,9 +66,9 @@ export const isNotEmptyAndUndefined = (input) => {
 
 export const emptyScrapingResponse = () => {
   let scrapingRepsonseTMP = {
-    "scrapeJobId": ""
-    , "status": ""
-    , "orderIds": []
+    'scrapeJobId': ''
+    , 'status': ''
+    , 'orderIds': []
   };
   return scrapingRepsonseTMP;
 
