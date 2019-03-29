@@ -4,9 +4,9 @@ module.exports = function (api) {
     ['@babel/preset-env'],
   ];
   const plugins = [
-    ["@babel/plugin-transform-runtime", {
-      "regenerator": true
+    ['@babel/plugin-transform-runtime', {
+      'regenerator': true
     }]
-  ]
-  return { presets ,plugins }
+  ];
+  return { presets ,plugins };
 };
