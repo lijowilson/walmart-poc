@@ -19,7 +19,7 @@ export function invokePuppeteer(baseurl, username, password, targetSelectors,
       
       try {
         let data = await mongoController.persistInformation(scpResponseTemp)
-        //await browser.close()
+        await browser.close()
         throw new Error('Unable to open the base url provided')
       } catch (error) {
         console.log(error)
