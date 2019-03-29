@@ -2,23 +2,33 @@
   "name": "walmart-poc",
   "version": "1.0.0",
   "description": "walmart poc for fetching orderIDs from Account",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node index",
-    "dev": "nodemon index",
-    "kafkaConsumer" : "node kafkaConsumer"
+    "build": "babel src --out-dir dist/ --ignore src/public/**/*.js --copy-files",
+    "dev-start": "babel-node src/server",
+    "dev-kafkaConsumer": "babel-node src/kafkaConsumer",
+    "test-start": "node dist/server",
+    "test-kafkaConsumer": "node dist/kafkaConsumer"
   },
   "author": "lijo k wilson",
   "license": "ISC",
   "dependencies": {
+    "@babel/polyfill": "^7.4.0",
+    "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "kafkajs": "^1.5.0",
-    "mongodb": "^3.1.13",
+    "mongoose": "^5.4.20",
+    "process": "^0.11.10",
     "properties-reader": "0.0.16",
     "puppeteer": "^1.13.0",
     "validator": "^10.11.0"
   },
   "devDependencies": {
-    "nodemon": "^1.18.10"
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.4.0",
+    "@babel/node": "^7.2.2",
+    "@babel/plugin-transform-runtime": "^7.4.0",
+    "@babel/preset-env": "^7.4.2",
+    "@babel/runtime": "^7.4.2"
   }
 }
