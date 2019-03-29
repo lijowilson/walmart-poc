@@ -36,7 +36,7 @@ export function invokePuppeteer(baseURL, username, password, targetSelectors,
         }
       } else {
         // the page changed
-        let orderIdSections = await page.$$("." + targetSelectors);
+        let orderIdSections = await page.$$('.' + targetSelectors);
         try {
           await traverseAccountPage(orderIdSections, scpResponseTemp, browser);
         } catch (e1) {
