@@ -19,3 +19,17 @@ webscraper
 MongoDB Collection Name:
 scrapeboard
 
+To Start the webApplication
+> npm run dev-start
+
+To Start the KafkaConsumer
+> npm run dev-kafkaConsumer
+
+To Build the transpiled Package:
+> mkdir dist
+>npm run build //to transpile package and move to dist folder
+>npm run test-start // to start the web application
+>npm run test-kafkaConsumer //to start the kafka consumer application
+
+
+
