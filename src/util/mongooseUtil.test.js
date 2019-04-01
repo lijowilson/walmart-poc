@@ -1,4 +1,4 @@
-import {fetchwithMongoose, saveToDB} from "./mongooseUtilFunctions";
+import {fetchwithMongoose, saveToDB} from './mongooseUtilFunctions';
 import propertiesReader from 'properties-reader';
 
 import mongoose from 'mongoose';

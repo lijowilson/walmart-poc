@@ -7,7 +7,7 @@ import {
   readKafkaMsg,
   errorTypesFunc, signalTrapFunc
 } from './util/kafkaUtilFunctions';
-import {createMongoConnection} from "./util/mongooseUtilFunctions";
+import {createMongoConnection} from './util/mongooseUtilFunctions';
 const properties = propertiesReader('./properties/config.properties');
 
 //initialization of kafka-node object

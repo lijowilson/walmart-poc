@@ -1,4 +1,4 @@
-import {validateScrapeRequest} from "./utilFunctions";
+import {validateScrapeRequest} from './utilFunctions';
 
 test('testing Scraping Request Object of username and password positive test',
   () => {

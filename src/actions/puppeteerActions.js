@@ -7,9 +7,9 @@ import {
   traverseAccountPage
 } from '../util/puppeteerUtilFunctions'
 
-export function invokePuppeteer(baseURL, username, password, targetSelectors,
-                                scpResponseTemp) {
-  (async () => {
+export const invokePuppeteer = async(baseURL, username, password, targetSelectors,
+                                scpResponseTemp) => {
+  
     //open browser object
     const browser = await puppeteer.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -53,5 +53,5 @@ export function invokePuppeteer(baseURL, username, password, targetSelectors,
       return err;
       
     }
-  })();
+  
 }
