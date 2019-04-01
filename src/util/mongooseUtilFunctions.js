@@ -76,8 +76,8 @@ export const saveToDB = async (scrapingResponse, customer) => {
   //if( assert.ok(!errorValidator.errors['username']) && assert.ok(!errorValidator.errors['status'])){
   else {
     try {
-      let myQuery = {_id: scrapingResponse.scrapeJobId};
-      await customer.findOneAndUpdate(
+      const myQuery = {_id: scrapingResponse.scrapeJobId};
+      const respObj = await customer.findOneAndUpdate(
         myQuery
         , {
           $set: {
@@ -85,14 +85,15 @@ export const saveToDB = async (scrapingResponse, customer) => {
             'orderIdList': scrapingResponse.orderIds
           }
         }, {
-          upsert: true
+          upsert: true,
+          new: true
         });
       
       console.log(`1 document updated`);
       let tempScrapeInfo = emptyScrapingResponse();
-      tempScrapeInfo.scrapeJobId = scrapingResponse.scrapeJobId;
-      tempScrapeInfo.status = scrapingResponse.status;
-      tempScrapeInfo.orderIds = scrapingResponse.orderIds;
+      tempScrapeInfo.scrapeJobId = respObj.id;
+      tempScrapeInfo.status = respObj.status;
+      tempScrapeInfo.orderIds = respObj.orderIdList;
       
       return tempScrapeInfo;
     } catch (err) {

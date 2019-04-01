@@ -7,8 +7,9 @@
     "build": "babel src --out-dir dist/ --ignore src/public/**/*.js --copy-files",
     "dev-start": "babel-node src/server",
     "dev-kafkaConsumer": "babel-node src/kafkaConsumer",
-    "test-start": "node dist/server",
-    "test-kafkaConsumer": "node dist/kafkaConsumer"
+    "env-start": "node dist/server",
+    "env-kafkaConsumer": "node dist/kafkaConsumer",
+    "test": "jest"
   },
   "author": "lijo k wilson",
   "license": "ISC",
@@ -16,6 +17,7 @@
     "@babel/polyfill": "^7.4.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
+    "jest": "^24.5.0",
     "kafkajs": "^1.5.0",
     "mongoose": "^5.4.20",
     "process": "^0.11.10",
