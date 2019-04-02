@@ -19,7 +19,13 @@ export const populatePuppeteerReq = (username, password,status) => {
   };
   return customObj;
 }
-test('test for api with puppetter valid scenario'
+beforeAll(() => {
+  //starting mongoose connection
+  createMongoConnection(mongoose);
+});
+
+
+test.skip('test for api with puppetter valid scenario'
   , async () => {
     try {
       const username = 'dima@litmus7.com';
@@ -43,7 +49,7 @@ test('test for api with puppetter valid scenario'
     }
   }, 50000);
 
-test('test for api with puppetter invalid credentials'
+test.skip('test for api with puppetter invalid credentials'
   , async () => {
     try {
       const username = 'dima1@litmus7.com';
@@ -66,3 +72,4 @@ test('test for api with puppetter invalid credentials'
       console.log(`error while invoking puppetteer ${err}`);
     }
   }, 50000);
+
