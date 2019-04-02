@@ -33,21 +33,27 @@ export const getKafkaMessage = async (kafkaObject, topic) => {
 
 export const readKafka = async (topicName, consumer) => {
   return new Promise((resolve, reject) => {
-    const run = async () => {
-      await consumer.connect();
-      await consumer.subscribe({topic: topicName});
-      await consumer.run({
-        autoCommitInterval: 5000
-        , eachMessage: async ({topic, partition, message}) => {
-          if (message.value !== 'undefined') {
-            message = JSON.parse(message.value);
-            resolve(message);
+    try {
+      const run = async () => {
+        await consumer.connect();
+        await consumer.subscribe({topic: topicName});
+        await consumer.run({
+          autoCommitInterval: 5000
+          , eachMessage: async ({topic, partition, message}) => {
+            if (message.value !== 'undefined') {
+              message = JSON.parse(message.value);
+              resolve(message);
+            }
+        
           }
-          
-        }
-      })
-    };
-    return run();
+        })
+      };
+      return run();
+    }catch(err){
+      console.log(`err value ${err}`);
+      reject(err);
+    }
+    
   });
   
   

@@ -2,7 +2,8 @@ import {invokePuppeteer} from './puppeteerActions';
 import propertiesReader from 'properties-reader';
 import {
   createMongoConnection,
-  saveToDB, fetchwithMongoose
+  fetchwithMongoose,
+  saveToDB
 } from '../util/mongooseUtilFunctions';
 import customerObj from '../model/customer';
 import mongoose from 'mongoose';
@@ -10,15 +11,14 @@ import mongoose from 'mongoose';
 const properties = propertiesReader('./properties/config.properties');
 export const populatePuppeteerReq = (username, password,status) => {
   //creating customer object
-  let customObj = {
+  return {
     'scrapeJobId': ''
     , 'status': status
     , 'username': username
     , 'password': password
     , 'orderIds': []
   };
-  return customObj;
-}
+};
 beforeAll(() => {
   //starting mongoose connection
   createMongoConnection(mongoose);

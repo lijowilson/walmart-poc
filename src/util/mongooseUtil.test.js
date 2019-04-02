@@ -41,7 +41,7 @@ describe('testing the fetch API', () => {
     , async () => {
       try {
         const hugeFetchId = '5c9e4b0b4d7183416cc1a33f33333rrff';
-        const data = await fetchwithMongoose(hugeFetchId, customerObj);
+        await fetchwithMongoose(hugeFetchId, customerObj);
       } catch (err) {
         //console.log(`err.message object => ${err.message}`);
         expect(err.message).toEqual('Invalid Parameter');
@@ -80,7 +80,7 @@ describe('testing the save API of mongoose', () => {
           , 'username': ''
           , 'orderIds': []
         };
-        const dbResponse = await saveToDB(scrapingObject, customerObj);
+        await saveToDB(scrapingObject, customerObj);
         
       } catch (err) {
         //console.log(`err.message object => ${err.message}`);
@@ -100,7 +100,7 @@ describe('testing the save API of mongoose', () => {
           , 'username': 'test-user@gmail.com'
           , 'orderIds': []
         };
-        const dbResponse = await saveToDB(scrapingObject, customerObj);
+        await saveToDB(scrapingObject, customerObj);
         
       } catch (err) {
         //console.log(`err.message object => ${err.message}`);
@@ -121,7 +121,7 @@ describe('testing the save API of mongoose', () => {
           , 'username': 'test-user-longuser@gmail.com'
           , 'orderIds': []
         };
-        const dbResponse = await saveToDB(scrapingObject, customerObj);
+        await saveToDB(scrapingObject, customerObj);
         
       } catch (err) {
         //console.log(`err.message object => ${err.message}`);
@@ -143,9 +143,8 @@ describe('testing the save API of mongoose', () => {
         , 'orderIds': []
       };
       const dbResponse = await saveToDB(customObj, customerObj);
-      const newScrapingId = dbResponse.scrapeJobId;
       //now run the update
-      customObj.scrapeJobId = newScrapingId;
+      customObj.scrapeJobId = dbResponse.scrapeJobId;
       customObj.status = 'test-update';
       customObj.username = 'test-update@t.com';
       customObj.orderIds = ['122222', '2222222', '311111'];
