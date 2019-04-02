@@ -35,25 +35,42 @@ export const invalidLoginFlow = async (browser, scpResponseTemp, persistInformat
   await persistInformation(scpResponseTemp);
   await browser.close();
   throw new Error('Invalid Credentials Entered')
+};
+
+export const traverseAccountPage = async (orderIdSections, scpResponseTemp, browser) => {
+  try {
+    let response = await extractOrderID(orderIdSections, scpResponseTemp);
+    await persistInformation(response);
+    await browser.close();
+    return response;
+  } catch (err) {
+    console.log(err);
+  }
   
   
 };
 
-export const traverseAccountPage = async (orderIdSections, scpResponseTemp, browser) => {
-  
-  //console.log('length of selectors ' + orderIDSections.length)
+export const extractOrderID = (orderIdSections, scpResponseTemp) =>
+{
   let orderIdArr = [];
-  for (let tile of orderIdSections) {
-    let orderID = await tile.$eval('b', (b) => b.innerText);
-    orderIdArr.push(orderID);
-    console.log(orderID);
-  }
-  //populate transfer objects
-  scpResponseTemp.orderIds = orderIdArr;
-  scpResponseTemp.status = 'complete';
-  
-  await persistInformation(scpResponseTemp);
-  await browser.close();
-  return scpResponseTemp;
-  
+  return new Promise((resolve, reject) => {
+    orderIdSections.map(document => {
+      try {
+        (async function r() {
+          let orderID = await document.$eval('b', (b) => b.innerText);
+          orderIdArr.push(orderID);
+          if (orderIdSections.length == orderIdArr.length) {
+            scpResponseTemp.orderIds = orderIdArr;
+            scpResponseTemp.status = 'complete';
+            resolve(scpResponseTemp);
+          }
+        })();
+        
+      } catch (err) {
+        scpResponseTemp.status = 'error';
+        console.log(`err in traverse account page function  ${err.message}`);
+        reject(scpResponseTemp)
+      }
+    });
+  });
 };
