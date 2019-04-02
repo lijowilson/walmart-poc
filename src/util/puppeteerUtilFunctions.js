@@ -50,8 +50,7 @@ export const traverseAccountPage = async (orderIdSections, scpResponseTemp, brow
   
 };
 
-export const extractOrderID = (orderIdSections, scpResponseTemp) =>
-{
+export const extractOrderID = (orderIdSections, scpResponseTemp) => {
   let orderIdArr = [];
   return new Promise((resolve, reject) => {
     orderIdSections.map(document => {
