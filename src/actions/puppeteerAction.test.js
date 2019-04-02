@@ -8,21 +8,23 @@ import customerObj from '../model/customer';
 import mongoose from 'mongoose';
 
 const properties = propertiesReader('./properties/config.properties');
-
+export const populatePuppeteerReq = (username, password,status) => {
+  //creating customer object
+  let customObj = {
+    'scrapeJobId': ''
+    , 'status': status
+    , 'username': username
+    , 'password': password
+    , 'orderIds': []
+  };
+  return customObj;
+}
 test('test for api with puppetter valid scenario'
   , async () => {
     try {
-      //first insert an entry to db
-      let username = 'dima@litmus7.com';
-      let password = 'Aa123456';
-      //creating customer object
-      let customObj = {
-        'scrapeJobId': ''
-        , 'status': 'in-progress'
-        , 'username': username
-        , 'password': password
-        , 'orderIds': []
-      };
+      const username = 'dima@litmus7.com';
+      const password = 'Aa123456';
+      let customObj = populatePuppeteerReq(username, password, 'in-progress');
       createMongoConnection(mongoose);
       let dbResponse1 = await saveToDB(customObj, customerObj);
       //expect(1);
@@ -34,8 +36,6 @@ test('test for api with puppetter valid scenario'
       const targetSelector = properties.get('walmart-orderSection-selector');
       await invokePuppeteer(baseURL, username, password, targetSelector, customObj);
       const data = await fetchwithMongoose(scrapeJobId, customerObj);
-      //things to validate are status should be complete, array size
-      // should be bigger than 0
       expect(data.status).toEqual('complete');
       
     } catch (err) {
@@ -46,17 +46,9 @@ test('test for api with puppetter valid scenario'
 test('test for api with puppetter invalid credentials'
   , async () => {
     try {
-      //first insert an entry to db
-      let username = 'dima1@litmus7.com';
-      let password = 'Aa123456';
-      //creating customer object
-      let customObj = {
-        'scrapeJobId': ''
-        , 'status': 'in-progress'
-        , 'username': username
-        , 'password': password
-        , 'orderIds': []
-      };
+      const username = 'dima1@litmus7.com';
+      const password = 'Aa123456';
+      let customObj = populatePuppeteerReq(username, password, 'in-progress');
       createMongoConnection(mongoose);
       let dbResponse1 = await saveToDB(customObj, customerObj);
       //expect(1);
@@ -68,8 +60,6 @@ test('test for api with puppetter invalid credentials'
       const targetSelector = properties.get('walmart-orderSection-selector');
       await invokePuppeteer(baseURL, username, password, targetSelector, customObj);
       const data = await fetchwithMongoose(scrapeJobId, customerObj);
-      //things to validate are status should be complete, array size
-      // should be bigger than 0
       expect(data.status).toEqual('invalid credentials');
       
     } catch (err) {
