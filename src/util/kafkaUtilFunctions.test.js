@@ -54,8 +54,5 @@ export const readKafka = async (topicName, consumer) => {
       console.log(`err value ${err}`);
       reject(err);
     }
-    
   });
-  
-  
 };
