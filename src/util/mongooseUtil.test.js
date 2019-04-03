@@ -1,4 +1,4 @@
-import {fetchwithMongoose, saveToDB} from './mongooseUtilFunctions';
+import {fetchwithMongoose, saveToDB,deleteFromDB} from './mongooseUtilFunctions';
 import propertiesReader from 'properties-reader';
 
 import mongoose from 'mongoose';
@@ -6,6 +6,7 @@ import {createMongoConnection} from './mongooseUtilFunctions';
 import customerObj from '../model/customer';
 
 const properties = propertiesReader('./properties/config.properties');
+let scrapeIdArr = [];
 
 beforeAll(() => {
   //starting mongoose connection
@@ -64,6 +65,7 @@ describe('testing the save API of mongoose', () => {
         const dbResponse = await saveToDB(scrapingObject, customerObj);
         expect(dbResponse.scrapeJobId.length).toBeGreaterThanOrEqual(1);
         expect(dbResponse.status).toEqual('test-status');
+        scrapeIdArr.push(dbResponse.scrapeJobId);
       } catch (err) {
         console.log(`err.message object => ${err.message}`);
       }
@@ -153,9 +155,17 @@ describe('testing the save API of mongoose', () => {
       let updatedResponse = await saveToDB(customObj, customerObj);
       expect(updatedResponse.status).toEqual('test-update');
       expect(updatedResponse.orderIds.length).toBeGreaterThanOrEqual(3);
-      
+      scrapeIdArr.push(dbResponse.scrapeJobId);
       
     });
+});
+
+afterAll(() =>{
+  if(scrapeIdArr.length > 0){
+    for(let tempId of scrapeIdArr){
+       deleteFromDB(tempId,customerObj)
+    }
+  }
 });
 
 

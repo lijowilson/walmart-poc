@@ -3,7 +3,7 @@ import propertiesReader from 'properties-reader';
 
 const properties = propertiesReader('./properties/config.properties');
 const topicName = properties.get('kafka-topic');
-const message = 'test-producer-message1';
+const message = 'test-producer-message';
 describe('testing kafka producer and consumer code', () => {
   test('testing the kafka producer', async () => {
     const producer = kafkaObject().producer();
@@ -38,7 +38,8 @@ export const readKafka = async (topicName, consumer) => {
         await consumer.connect();
         await consumer.subscribe({topic: topicName});
         await consumer.run({
-          autoCommitInterval: 5000
+          autoCommit: true
+          , autoCommitInterval: 1000
           , eachMessage: async ({topic, partition, message}) => {
             if (message.value !== 'undefined') {
               message = JSON.parse(message.value);

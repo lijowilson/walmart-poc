@@ -1,4 +1,4 @@
-import {emptyScrapingResponse} from './utilFunctions';
+import {emptyScrapingResponse,isNotEmptyAndUndefined} from './utilFunctions';
 import propertiesReader from 'properties-reader';
 
 const properties = propertiesReader('./properties/config.properties');
@@ -102,4 +102,17 @@ export const saveToDB = async (scrapingResponse, customer) => {
     }
   }
   
+};
+
+export const deleteFromDB = async(scrapeId,customer) =>{
+  
+  if(isNotEmptyAndUndefined(scrapeId)){
+    const deleteQuery = {_id: scrapeId};
+    try{
+     await customer.remove(deleteQuery);
+    }catch(err){
+      console.error(`Error in delete From DB ${err}`);
+    }
+    
+  }
 };
