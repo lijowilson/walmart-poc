@@ -1,4 +1,8 @@
-import {emptyScrapingResponse, isNotEmptyAndUndefined} from './utilFunctions';
+import {
+  emptyScrapingResponse,
+  emptyFetchInfo,
+  isNotEmptyAndUndefined
+} from './utilFunctions';
 import propertiesReader from 'properties-reader';
 
 const properties = propertiesReader('./properties/config.properties');
@@ -22,14 +26,15 @@ export function getConnectionURL() {
   return properties.get('mongodb-connectionURL');
 }
 
-export const fetchwithMongoose = async (scrapeJobId, scrapeboard) => {
-  let tempScrapeInfoFetch = emptyScrapingResponse();
+export const fetchwithMongoose = async (scrapeJobId, customerObj, orderObj) => {
+  let tempScrapeInfoFetch = emptyFetchInfo();
   try {
-    const result = await scrapeboard.findById(scrapeJobId);
+    const result = await customerObj.findById(scrapeJobId);
     if (result != null) {
       tempScrapeInfoFetch.status = result.status;
-      tempScrapeInfoFetch.orderIds = result.orderIdList;
       tempScrapeInfoFetch.scrapeJobId = scrapeJobId;
+      //logic to retrieve order and product information
+      tempScrapeInfoFetch.orderInfo = await getOrderInformation(orderObj, scrapeJobId);//customerid
     } else {
       tempScrapeInfoFetch.status = 'Invalid Parameter';
     }
@@ -46,7 +51,7 @@ export const fetchwithMongoose = async (scrapeJobId, scrapeboard) => {
   return tempScrapeInfoFetch
 };
 
-export const saveToDB = async (scrapingResponse, customer) => {
+export const saveCustomerInfo = async (scrapingResponse, customer) => {
   
   /* now the save operation for scraping response can take 2 options. Either the scraping response
      which scrape id is empty which means its the first time invocation else
@@ -113,4 +118,46 @@ export const deleteFromDB = async (scrapeId, customer) => {
       console.error(`Error in delete From DB ${err}`);
     }
   }
+};
+
+export const saveOrdersToDB = async (orderObjArr, orderModel) => {
+  
+  let orderResponse = {
+    id : ''
+  };
+  for (let order of orderObjArr) {
+    let orderObj = new orderModel({
+      'customerId': order.customerId
+      , 'orderId': order.orderId
+      , 'productList': order.productList
+    });
+    
+    try {
+      const orderModel = await orderObj.save();
+      orderResponse.id = orderModel.id;
+    } catch (err) {
+      if (err) throw (err);
+    }
+  }
+  return orderResponse;
+};
+
+export const getOrderInformation = async (orderObj, customerId) => {
+  
+  const orderInfo = [];
+  try {
+    const orderData = await orderObj.find({customerId: customerId});
+    if (typeof orderData !== 'undefined') {
+      orderData.forEach(function (orderItem) {
+        let orderAray = {};
+        orderAray.orderId = orderItem.orderId;
+        orderAray.productList = orderItem.productList;
+        orderInfo.push(orderAray);
+      });
+    }
+  } catch (err) {
+    console.log(`error while fetching order information ${err.message}`);
+    throw err;
+  }
+  return orderInfo;
 };

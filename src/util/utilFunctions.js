@@ -1,6 +1,7 @@
 import validator from 'validator';
 import {fetchwithMongoose} from '../util/mongooseUtilFunctions';
 import customerObj from '../model/customer';
+import orderObj from '../model/orders';
 
 export const validateScrapeRequest = (...inputReqArray) => {
   let status = false;
@@ -19,8 +20,7 @@ export const performFetchInfo = (res, scrapeId) => {
   
   async function run() {
     try {
-      let data = await fetchwithMongoose(scrapeId, customerObj);
-      
+      let data = await fetchwithMongoose(scrapeId, customerObj, orderObj);
       if (data !== 'undefined' && data !== null) {
         if (data.status === 'Invalid Parameter') {
           res.status(400).send('Bad Request');
@@ -71,5 +71,13 @@ export const emptyScrapingResponse = () => {
     , 'orderIds': []
   };
   return scrapingRepsonseTMP;
-
 };
+
+export const emptyFetchInfo = () =>{
+  let fetchResponse = {
+    'scrapeJobId': ''
+    , 'status': ''
+    , 'orderInfo': []
+  };
+  return fetchResponse;
+}

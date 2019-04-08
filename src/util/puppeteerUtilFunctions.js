@@ -1,4 +1,4 @@
-import {persistInformation} from '../actions/mongoServices';
+import {persistInformation, persistOrderInfo} from '../actions/mongoServices';
 
 export const openBasePage = async (browser, page, baseURL, scpResponseTemp) => {
   try {
@@ -8,7 +8,7 @@ export const openBasePage = async (browser, page, baseURL, scpResponseTemp) => {
     await page.goto(baseURL);
     
   } catch (e) {
-    console.log(`error while opening page with base url => ${e}`)
+    console.log(`error while opening page with base url => ${e}`);
     scpResponseTemp.status = 'error';
     scpResponseTemp.orderIdList = [];
     await persistInformation(scpResponseTemp);
@@ -37,19 +37,65 @@ export const invalidLoginFlow = async (browser, scpResponseTemp, persistInformat
   throw new Error('Invalid Credentials Entered')
 };
 
-export const traverseAccountPage = async (orderIdSections, scpResponseTemp, browser) => {
+export const invokeAcctPageAPI = async (page, scpResponseTemp, browser, apiURL) => {
   try {
-    let response = await extractOrderID(orderIdSections, scpResponseTemp);
-    await persistInformation(response);
-    await browser.close();
-    return response;
+    await page.goto(apiURL);
+    await page.content();
+    const innerText = await page.evaluate(() => {
+      return JSON.parse(document.querySelector('body').innerText);
+    });
+    const ordersInfo = innerText.orders;
+    const orderIdArr = getOrderIds(ordersInfo);
+    scpResponseTemp.orderIds = orderIdArr;
+    scpResponseTemp.status = 'complete';
+    await persistInformation(scpResponseTemp);
+    
+    //save product information for orders
+    if (orderIdArr.length > 0) {
+      let orderArray = getOrderInfo(ordersInfo, scpResponseTemp.scrapeJobId);
+      await persistOrderInfo(orderArray);
+      await browser.close();
+      
+    }
+    return scpResponseTemp;
   } catch (err) {
+    scpResponseTemp.status = 'error';
+    await persistInformation(scpResponseTemp);
     console.log(err);
   }
-  
-  
 };
 
+export const getOrderIds = (orderArr) => {
+  let orderIdArr = [];
+  for (let orderObj of orderArr) {
+    orderIdArr.push(orderObj.id);
+  }
+  return orderIdArr;
+};
+
+export const getOrderInfo = (orderArrayObj, customerId) => {
+  let orderObjArr = [];
+  
+  for (let order of orderArrayObj) {
+    let orderObj = {
+      customerId: customerId,
+      orderId: order.id,
+      productList: []
+    };
+    orderObj.productList = getProductInfo(order.items);
+    orderObjArr.push(orderObj);
+  }
+  return orderObjArr;
+};
+
+export const getProductInfo = (productArray) => {
+  let productList = [];
+  for (let product of productArray) {
+    productList.push(product.name);
+  }
+  return productList;
+};
+/*
 export const extractOrderID = (orderIdSections, scpResponseTemp) => {
   let orderIdArr = [];
   return new Promise((resolve, reject) => {
@@ -73,3 +119,15 @@ export const extractOrderID = (orderIdSections, scpResponseTemp) => {
     });
   });
 };
+
+export const traverseAccountPage = async (orderIdSections, scpResponseTemp, browser) => {
+  try {
+    let response = await extractOrderID(orderIdSections, scpResponseTemp);
+    await persistInformation(response);
+    await browser.close();
+    return response;
+  } catch (err) {
+    console.log(err);
+  }
+};
+*/

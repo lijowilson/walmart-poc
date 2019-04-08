@@ -63,7 +63,7 @@ paths:
         200:
           description: "OK"
           schema:
-            $ref: "#/definitions/scrapeInfoResponse"
+            $ref: "#/definitions/orderResponse"
         400:
           description: "Bad Request"
         404:
@@ -101,3 +101,34 @@ definitions:
         type: "array"
         items:
           type: "string"
+  orderResponse:
+    type: "object"
+    properties:
+      scrapeJobId:
+        type: "string"
+      status:
+        type: "string"
+        enum:
+        - "in-progress"
+        - "complete"
+        - "error"
+        - "invalid credentials"
+      orderInfo:
+        type: "array"
+        items:
+          $ref: '#/definitions/orderObject'
+  orderObject:
+    type: "object"
+    properties:
+      orderId:
+        type: "number"
+      productList:
+        type: "array"
+        items:
+          type: "string"
+
+
+
+
+
+

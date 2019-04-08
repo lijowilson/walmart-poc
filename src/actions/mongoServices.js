@@ -1,6 +1,7 @@
 //class level imports for mongodb
-import {saveToDB} from '../util/mongooseUtilFunctions';
+import {saveCustomerInfo, saveOrdersToDB} from '../util/mongooseUtilFunctions';
 import customerObj from '../model/customer';
+import orderObj from '../model/orders';
 
 /**
  * This method is used to persist information in mongodb
@@ -15,5 +16,9 @@ export function persistInformation(scrapingResponse) {
       ,statusObj=${scrapingResponse.status}
       ,orderIdArr=${scrapingResponse.orderIds}`);
   
-  return saveToDB(scrapingResponse, customerObj);
+  return saveCustomerInfo(scrapingResponse, customerObj);
+}
+
+export function persistOrderInfo(orderResponse) {
+  return saveOrdersToDB(orderResponse, orderObj);
 }

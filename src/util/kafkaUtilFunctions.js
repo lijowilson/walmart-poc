@@ -1,4 +1,4 @@
-import {invokePuppeteer}from '../actions/puppeteerActions';
+import {invokePuppeteer} from '../actions/puppeteerActions';
 import {emptyScrapingResponse} from './utilFunctions';
 import * as kafka from 'kafkajs';
 import propertiesReader from 'properties-reader';
@@ -26,10 +26,9 @@ export const signalTrapFunc = (signalTraps, obj, process) => {
     process.once(type, async () => {
       try {
         await obj.disconnect();
-      } catch(e) {
+      } catch (e) {
         console.log(`error on signaltrap function => ${e}`);
-      }finally
-       {
+      } finally {
         // noinspection JSUnresolvedFunction
         process.kill(process.pid, type);
       }
@@ -80,14 +79,14 @@ export const readKafkaMsg = async (topicName, consumer) => {
     await consumer.connect();
     await consumer.subscribe({topic: topicName});
     await consumer.run({
-      autoCommitInterval: 5000
+      autoCommitInterval: 1000
       , eachMessage: async ({topic, partition, message}) => {
         if (message.value !== 'undefined') {
           message = JSON.parse(message.value);
           let [username, password] = [message.username, message.password];
           const baseURL = properties.get('walmart-baseurl');
-          const targetSelector = properties.get('walmart-orderSection-selector');
-          
+          //const targetSelector = properties.get('walmart-orderSection-selector');
+          const apiURL = properties.get('walmart-apiurl');
           console.log(`username ${username} password ${password}`);
           let scrapingRepsonseTMP = emptyScrapingResponse();
           scrapingRepsonseTMP.scrapeJobId = message.scrapeJobId;
@@ -95,7 +94,7 @@ export const readKafkaMsg = async (topicName, consumer) => {
           scrapingRepsonseTMP.orderIds = message.orderIds;
           try {
             console.log(`puppetter invoked...`);
-            await invokePuppeteer(baseURL, username, password, targetSelector, scrapingRepsonseTMP);
+            await invokePuppeteer(baseURL, username, password, apiURL, scrapingRepsonseTMP);
           } catch (err) {
             console.log(`puppetter error ==>${err}`);
           }

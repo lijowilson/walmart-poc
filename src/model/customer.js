@@ -5,7 +5,7 @@ const customerSchema = mongoose.Schema({
       type: String,
       required: true,
       minlength: 10,
-      maxlength: 20
+      maxlength: 30
     },
     status: {
       type: String,

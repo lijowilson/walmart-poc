@@ -3,7 +3,7 @@ import propertiesReader from 'properties-reader';
 import {
   createMongoConnection,
   fetchwithMongoose,
-  saveToDB
+  saveCustomerInfo
 } from '../util/mongooseUtilFunctions';
 import customerObj from '../model/customer';
 import mongoose from 'mongoose';
@@ -32,15 +32,15 @@ test.skip('test for api with puppetter valid scenario'
       const password = 'Aa123456';
       let customObj = populatePuppeteerReq(username, password, 'in-progress');
       createMongoConnection(mongoose);
-      let dbResponse1 = await saveToDB(customObj, customerObj);
+      let dbResponse1 = await saveCustomerInfo(customObj, customerObj);
       //expect(1);
       expect(dbResponse1.scrapeJobId.length).toBeGreaterThanOrEqual(1);
       let scrapeJobId = dbResponse1.scrapeJobId;
       customObj.scrapeJobId = scrapeJobId;
       console.log(`scrapeJobId => ${scrapeJobId}`);
       const baseURL = properties.get('walmart-baseurl');
-      const targetSelector = properties.get('walmart-orderSection-selector');
-      await invokePuppeteer(baseURL, username, password, targetSelector, customObj);
+      const apiURL = properties.get('walmart-apiurl');
+      await invokePuppeteer(baseURL, username, password, apiURL, customObj);
       const data = await fetchwithMongoose(scrapeJobId, customerObj);
       expect(data.status).toEqual('complete');
       
@@ -56,15 +56,15 @@ test.skip('test for api with puppetter invalid credentials'
       const password = 'Aa123456';
       let customObj = populatePuppeteerReq(username, password, 'in-progress');
       createMongoConnection(mongoose);
-      let dbResponse1 = await saveToDB(customObj, customerObj);
+      let dbResponse1 = await saveCustomerInfo(customObj, customerObj);
       //expect(1);
       expect(dbResponse1.scrapeJobId.length).toBeGreaterThanOrEqual(1);
       let scrapeJobId = dbResponse1.scrapeJobId;
       customObj.scrapeJobId = scrapeJobId;
       console.log(`scrapeJobId => ${scrapeJobId}`);
       const baseURL = properties.get('walmart-baseurl');
-      const targetSelector = properties.get('walmart-orderSection-selector');
-      await invokePuppeteer(baseURL, username, password, targetSelector, customObj);
+      const apiURL = properties.get('walmart-apiurl');
+      await invokePuppeteer(baseURL, username, password, apiURL, customObj);
       const data = await fetchwithMongoose(scrapeJobId, customerObj);
       expect(data.status).toEqual('invalid credentials');
       

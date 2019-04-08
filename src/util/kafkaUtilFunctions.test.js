@@ -45,12 +45,12 @@ export const readKafka = async (topicName, consumer) => {
               message = JSON.parse(message.value);
               resolve(message);
             }
-        
+            
           }
         })
       };
       return run();
-    }catch(err){
+    } catch (err) {
       console.log(`err value ${err}`);
       reject(err);
     }
