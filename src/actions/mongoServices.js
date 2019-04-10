@@ -22,3 +22,4 @@ export function persistInformation(scrapingResponse) {
 export function persistOrderInfo(orderResponse) {
   return saveOrdersToDB(orderResponse, orderObj);
 }
+

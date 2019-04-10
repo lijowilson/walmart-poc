@@ -8,6 +8,13 @@ import {
 import * as mongoController from '../actions/mongoServices';
 import * as kafkaController from '../actions/kafkaServices';
 
+/**
+ * This method is used to push the message received from API to KAFKA Queue,
+ * connected to the Broker.
+ *
+ * @param req
+ * @param resp
+ */
 export const pushToKafka = (req, resp) => {
   
   run().catch(err => console.log(err));
@@ -19,7 +26,6 @@ export const pushToKafka = (req, resp) => {
       const userObject = req.body;
       const username = userObject.username;
       const password = userObject.password;
-      //username = 'dima@litmus7.com'; password = 'Aa123456';
       let scrapingRepsonse = {
         'scrapeJobId': ''
         , 'status': ''
@@ -61,6 +67,12 @@ export const pushToKafka = (req, resp) => {
   }
 };
 
+/**
+ * This method is used to fetch the information requested by FetchAPI related to order.
+ * @param req
+ * @param res
+ * @returns {Promise<void>}
+ */
 export const fetchScrapeStatus = (req, res) => {
   
   // noinspection JSUnresolvedVariable

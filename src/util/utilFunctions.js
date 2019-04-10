@@ -81,3 +81,10 @@ export const emptyFetchInfo = () =>{
   };
   return fetchResponse;
 }
+
+export const getLastAccessTime = async (activityTime) => {
+  //time in minutes
+  console.log(`get last access time currentdate ${new Date()} and activitytime=${activityTime}`);
+  return ((new Date() - activityTime)/60000);
+  
+}

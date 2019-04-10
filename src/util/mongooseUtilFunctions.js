@@ -123,7 +123,7 @@ export const deleteFromDB = async (scrapeId, customer) => {
 export const saveOrdersToDB = async (orderObjArr, orderModel) => {
   
   let orderResponse = {
-    id : ''
+    id: ''
   };
   for (let order of orderObjArr) {
     let orderObj = new orderModel({
@@ -160,4 +160,46 @@ export const getOrderInformation = async (orderObj, customerId) => {
     throw err;
   }
   return orderInfo;
+};
+
+export const fetchSecretInfo = async (id, secretModel) => {
+  let secretData = [];
+  try {
+    secretData = await secretModel.find({secretId: id});
+    //console.log('secret data'+JSON.stringify(secretData));
+    /*if(secretData.length >0){
+      secretData = secretData[0];
+    }*/
+  } catch (err) {
+    console.log(`error while invoking mongodb for secret ${err.message}`);
+  }
+  return secretData;
+};
+
+export const saveSessionId = async(id,secretKey,secretModel) => {
+  try{
+  
+    const myQuery = {secretId: id};
+    let dateObj =new Date();
+    await secretModel.findOneAndUpdate(
+      myQuery
+      , {
+        $set: {
+          'secretId': id,
+          'secretKey': secretKey,
+          'activationTime': dateObj
+        }
+      }, {
+        upsert: true
+      });
+  
+    console.log(`1 document updated`);
+    
+  }catch(err){
+    console.log(`error while saving information to the collection named secret with exception -> ${err.message}`);
+    throw err;
+  }
+  
+  return secretKey;
+  
 };

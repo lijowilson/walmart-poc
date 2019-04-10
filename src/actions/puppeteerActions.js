@@ -7,7 +7,19 @@ import {
   invokeAcctPageAPI
 } from '../util/puppeteerUtilFunctions'
 
-export const invokePuppeteer = async (baseURL, username, password, apiURL,
+/**
+ * This is the old method which relies on puppetteer to scrape information and save data
+ * @param baseURL
+ * @param username
+ * @param password
+ * @param apiURL
+ * @param scpResponseTemp
+ * @returns {Promise<*>}
+ */
+export const invokePuppeteer = async (baseURL,
+                                      username,
+                                      password,
+                                      apiURL,
                                       scpResponseTemp) => {
   
   //open browser object
@@ -36,7 +48,7 @@ export const invokePuppeteer = async (baseURL, username, password, apiURL,
   } catch (err) {
     console.log(`error in puppetteer actions js ${err.message}`);
     browser.close();
-    if(err.message !== 'Invalid Credentials Entered'){
+    if (err.message !== 'Invalid Credentials Entered') {
       scpResponseTemp.status = 'error';
       scpResponseTemp.orderIdList = [];
       await persistInformation(scpResponseTemp);

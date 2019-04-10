@@ -20,9 +20,11 @@
     "jest": "^24.5.0",
     "kafkajs": "^1.5.0",
     "mongoose": "^5.4.20",
+    "postman-request": "^2.88.1-postman.9",
     "process": "^0.11.10",
     "properties-reader": "0.0.16",
     "puppeteer": "^1.13.0",
+    "request-promise": "^4.2.4",
     "validator": "^10.11.0"
   },
   "devDependencies": {

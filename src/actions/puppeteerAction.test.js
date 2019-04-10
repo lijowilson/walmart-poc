@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import {invokePuppeteer} from './puppeteerActions';
 import propertiesReader from 'properties-reader';
 import {
@@ -6,9 +7,9 @@ import {
   saveCustomerInfo
 } from '../util/mongooseUtilFunctions';
 import customerObj from '../model/customer';
-import mongoose from 'mongoose';
 
 const properties = propertiesReader('./properties/config.properties');
+
 export const populatePuppeteerReq = (username, password,status) => {
   //creating customer object
   return {
