@@ -1,19 +1,22 @@
+import mongoose from 'mongoose';
 import {
+  createMongoConnection,
   fetchwithMongoose,
   saveCustomerInfo,
   deleteFromDB,
-  saveOrdersToDB
+  saveOrdersToDB,
+  fetchSecretInfo,
+  saveSessionId
 } from './mongooseUtilFunctions';
 import propertiesReader from 'properties-reader';
-
-import mongoose from 'mongoose';
-import {createMongoConnection} from './mongooseUtilFunctions';
 import customerObj from '../model/customer';
 import orderObj from '../model/orders';
+import secretObj from '../model/secret'
 
 const properties = propertiesReader('./properties/config.properties');
 let scrapeIdArr = [];
 let orderIdArr = [];
+let secretIdArr = [];
 
 beforeAll(() => {
   //starting mongoose connection
@@ -25,7 +28,7 @@ describe('testing the fetch API', () => {
     , async () => {
       
       const positiveFetchId = properties.get('jest-fetch-complete-id');
-      const data = await fetchwithMongoose(positiveFetchId, customerObj,orderObj);
+      const data = await fetchwithMongoose(positiveFetchId, customerObj, orderObj);
       //things to validate are status should be complete, array size
       // should be bigger than 0
       expect(data.status).toEqual('complete');
@@ -38,9 +41,9 @@ describe('testing the fetch API', () => {
     , async () => {
       
       const invalidId = properties.get('jest-fetch-invalidCredential-id');
-      const data = await fetchwithMongoose(invalidId, customerObj,orderObj);
+      const data = await fetchwithMongoose(invalidId, customerObj, orderObj);
       //things to validate are status should be invalid & array size be '0'
-      expect(data.status).toEqual('invalid credentials');
+      expect(data.status).toEqual('Invalid Credentials');
       //validate if orderids array is of size 0
       expect(data.orderInfo.length).toBeLessThan(1);
     });
@@ -49,10 +52,35 @@ describe('testing the fetch API', () => {
     , async () => {
       try {
         const hugeFetchId = '5c9e4b0b4d7183416cc1a33f33333rrff';
-        await fetchwithMongoose(hugeFetchId, customerObj,orderObj);
+        await fetchwithMongoose(hugeFetchId, customerObj, orderObj);
       } catch (err) {
         //console.log(`err.message object => ${err.message}`);
         expect(err.message).toEqual('Invalid Parameter');
+      }
+      
+    });
+  
+  test('test fetch API for secret positive scenario'
+    , async () => {
+      try {
+        const secretId = properties.get('jest-fetch-secret-id');
+        const secretInfo = await fetchSecretInfo(secretId, secretObj);
+        expect(secretInfo.length).toBeGreaterThanOrEqual(1);
+      } catch (err) {
+        console.log(`err.message object => ${err.message}`);
+      }
+      
+    });
+  
+  test('test fetch API for secret negative scenario'
+    , async () => {
+      try {
+        const secretId = 100;
+        const secretInfo = await fetchSecretInfo(secretId, secretObj);
+        //ideally the object should be empty as the secret key is invalid
+        expect(secretInfo.length).toBeLessThanOrEqual(0);
+      } catch (err) {
+        console.log(`err.message object => ${err.message}`);
       }
       
     });
@@ -82,17 +110,17 @@ describe('testing the save API of mongoose', () => {
         //saving orders collection
         scrapeIdArr.push(dbResponse.scrapeJobId);
         orderObject.customerId = dbResponse.scrapeJobId;
-        orderObject.orderId='1234';
+        orderObject.orderId = '1234';
         
         const productListArray = [];
         productListArray.push('test product1');
         productListArray.push('test product2');
-  
+        
         orderObject.productList = productListArray;
         orderObjectArr.push(orderObject);
-        const orderResponse = await saveOrdersToDB(orderObjectArr,orderObj);
+        const orderResponse = await saveOrdersToDB(orderObjectArr, orderObj);
         
-        if(orderResponse.id.length > 0){
+        if (orderResponse.id.length > 0) {
           orderIdArr.push(orderResponse.id);
         }
         
@@ -188,6 +216,24 @@ describe('testing the save API of mongoose', () => {
       scrapeIdArr.push(dbResponse.scrapeJobId);
       
     });
+  
+  test('test the secret info save API'
+    , async () => {
+      //creating secret object
+      const tempId = 2;
+      const secretKey = '121212121212121212121221212121212';
+      await saveSessionId(tempId, secretKey, secretObj);
+      
+      //to validate if the data is persisted
+      const secretInfo = await fetchSecretInfo(tempId, secretObj);
+      //ideally the object should be empty as the secret key is invalid
+      expect(secretInfo.length).toBeGreaterThanOrEqual(1);
+      if (secretInfo.length > 0) {
+        let tempObj = secretInfo[0];
+        let secretObjId = tempObj.id;
+        secretIdArr.push(secretObjId);
+      }
+    });
 });
 
 afterAll(() => {
@@ -197,11 +243,18 @@ afterAll(() => {
     }
   }
   
-  if(orderIdArr.length > 0){
-    for(let tempOrderId of orderIdArr){
-      deleteFromDB(tempOrderId,orderObj);
+  if (orderIdArr.length > 0) {
+    for (let tempOrderId of orderIdArr) {
+      deleteFromDB(tempOrderId, orderObj);
     }
   }
+  
+  if (secretIdArr.length > 0) {
+    for (let secretId of secretIdArr) {
+      deleteFromDB(secretId, secretObj);
+    }
+  }
+  
 });
 
 
